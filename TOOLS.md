@@ -37,4 +37,15 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ---
 
+## API Keys
+
+### Tavily Search API
+- Key: `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`
+- Status: Configured
+- Used for: Web search and research capabilities
+
+## Web Search
+
+- Tavily API Key: `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`
+
 Add whatever helps you do your job. This is your cheat sheet.
