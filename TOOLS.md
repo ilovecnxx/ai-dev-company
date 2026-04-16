@@ -39,6 +39,13 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ## API Keys
 
+### MiniMax API (mmx-cli)
+- Key: `sk-cp-AR2CRsGR97Bsxm3Ot168ai2A15SnJvG1hC9LtOEQLpDS2MEH2qE8Y_cXopVt8AXF2qx0FzYMvnYAlXqkewTuOAH3fExbTQXBd_rMmWKdIMc--9Gu3x5LAf8`
+- Region: CN
+- Status: ✅ Configured
+- Used for: Text chat, image/video/music generation, speech synthesis
+- Quota: 15,000 requests/week (MiniMax-M*)
+
 ### Tavily Search API
 - Key: `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`
 - Status: Configured

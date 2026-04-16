@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading... // CYBERBLOG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0a0f' width='100' height='100'/><text y='.9em' font-size='90'>⚡</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <!-- Scanline overlay -->
+  <div class="scanlines"></div>
+
+  <!-- Grid background -->
+  <div class="grid-bg"></div>
+
+  <!-- Floating particles -->
+  <canvas id="particles"></canvas>
+
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/>
+            <line x1="12" y1="22" x2="12" y2="15.5"/>
+            <line x1="22" y1="8.5" x2="12" y2="15.5"/>
+            <line x1="2" y1="8.5" x2="12" y2="15.5"/>
+          </svg>
+        </span>
+        <span class="logo-text">CYBER<span class="logo-accent">BLOG</span></span>
+      </a>
+
+      <nav class="nav">
+        <a href="/" class="nav-link">POSTS</a>
+        <a href="/editor" class="nav-link">CREATE</a>
+      </nav>
+
+      <button class="search-btn" id="searchBtn" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Post Content -->
+  <article class="post-page" id="postPage">
+    <div class="loading-state">
+      <span class="loading-text">DECRYPTING TRANSMISSION...</span>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-terminal">
+        <span class="footer-prompt">root@cyberblog:~#</span>
+        <span class="footer-text" id="footerText"></span>
+        <span class="footer-cursor">_</span>
+      </div>
+      <div class="footer-meta">
+        <span>CYBERBLOG v1.0</span>
+        <span>//</span>
+        <span>BUILT WITH NEURAL NETWORKS</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/effects.js"></script>
+  <script>
+    (async function() {
+      // Get slug from URL
+      const slug = window.location.pathname.split('/post/')[1];
+
+      if (!slug) {
+        window.location.href = '/';
+        return;
+      }
+
+      // Init effects
+      Effects.initParticles();
+
+      // Header scroll
+      window.addEventListener('scroll', () => {
+        const header = document.getElementById('header');
+        if (window.scrollY > 50) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      });
+
+      // Footer typing
+      Effects.typeText(document.getElementById('footerText'), 'Post decrypted successfully', 40);
+
+      // Load post
+      try {
+        const post = await API.getPost(slug);
+        document.title = `${post.title} // CYBERBLOG`;
+
+        // Configure marked
+        marked.setOptions({
+          breaks: true,
+          gfm: true
+        });
+
+        const htmlContent = marked.parse(post.content);
+
+        document.getElementById('postPage').innerHTML = `
+          <a href="/" class="post-back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            BACK TO ARCHIVES
+          </a>
+
+          <header class="post-header">
+            <div class="post-header-tags">
+              ${(post.tags || '').split(',').filter(t => t.trim()).map(t => `
+                <span class="tag">${t.trim()}</span>
+              `).join('')}
+            </div>
+            <h1 class="post-page-title">${escapeHtml(post.title)}</h1>
+            <div class="post-page-date">${formatDate(post.created_at)}</div>
+          </header>
+
+          <div class="post-content">
+            ${htmlContent}
+          </div>
+        `;
+      } catch (err) {
+        document.getElementById('postPage').innerHTML = `
+          <a href="/" class="post-back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            BACK TO ARCHIVES
+          </a>
+          <div class="empty-state" style="display: block;">
+            <div class="empty-icon">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+            </div>
+            <h2 class="empty-title">SIGNAL LOST</h2>
+            <p class="empty-text">This transmission could not be decoded</p>
+          </div>
+        `;
+      }
+
+      function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}.${month}.${day}`;
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+    })();
+  </script>
+</body>
+</html>

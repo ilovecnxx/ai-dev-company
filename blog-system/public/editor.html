@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CREATE // CYBERBLOG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0a0f' width='100' height='100'/><text y='.9em' font-size='90'>⚡</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <!-- Scanline overlay -->
+  <div class="scanlines"></div>
+
+  <!-- Grid background -->
+  <div class="grid-bg"></div>
+
+  <!-- Floating particles -->
+  <canvas id="particles"></canvas>
+
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/>
+            <line x1="12" y1="22" x2="12" y2="15.5"/>
+            <line x1="22" y1="8.5" x2="12" y2="15.5"/>
+            <line x1="2" y1="8.5" x2="12" y2="15.5"/>
+          </svg>
+        </span>
+        <span class="logo-text">CYBER<span class="logo-accent">BLOG</span></span>
+      </a>
+
+      <nav class="nav">
+        <a href="/" class="nav-link">POSTS</a>
+        <a href="/editor" class="nav-link active">CREATE</a>
+      </nav>
+
+      <button class="search-btn" id="searchBtn" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Editor Content -->
+  <main class="editor-page">
+    <a href="/" class="post-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      CANCEL
+    </a>
+
+    <input
+      type="text"
+      class="editor-title-input"
+      id="titleInput"
+      placeholder="Enter post title..."
+      autocomplete="off"
+    >
+
+    <div class="editor-meta">
+      <input
+        type="text"
+        class="editor-tags-input"
+        id="tagsInput"
+        placeholder="Tags: AI, 深度学习, 未来 (comma separated)"
+      >
+      <input
+        type="text"
+        class="editor-excerpt-input"
+        id="excerptInput"
+        placeholder="Brief summary..."
+      >
+    </div>
+
+    <div class="editor-body">
+      <div class="editor-input">
+        <div class="editor-input-header">MARKDOWN</div>
+        <textarea
+          class="editor-textarea"
+          id="contentInput"
+          placeholder="# Start writing...
+
+Use Markdown for formatting:
+- **bold** or *italic*
+- ## Heading
+- > Blockquote
+- `code`"
+        ></textarea>
+      </div>
+
+      <div class="editor-preview">
+        <div class="editor-preview-header">PREVIEW</div>
+        <div class="editor-preview-content" id="previewContent">
+          <p style="color: var(--text-dim);">Preview will appear here...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="editor-actions">
+      <button class="btn btn-ghost" id="cancelBtn">CANCEL</button>
+      <button class="btn btn-primary" id="publishBtn">PUBLISH</button>
+    </div>
+
+    <div class="editor-status" id="statusMessage"></div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-terminal">
+        <span class="footer-prompt">root@cyberblog:~#</span>
+        <span class="footer-text" id="footerText"></span>
+        <span class="footer-cursor">_</span>
+      </div>
+      <div class="footer-meta">
+        <span>CYBERBLOG v1.0</span>
+        <span>//</span>
+        <span>BUILT WITH NEURAL NETWORKS</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/effects.js"></script>
+  <script>
+    (function() {
+      'use strict';
+
+      // Elements
+      const titleInput = document.getElementById('titleInput');
+      const tagsInput = document.getElementById('tagsInput');
+      const excerptInput = document.getElementById('excerptInput');
+      const contentInput = document.getElementById('contentInput');
+      const previewContent = document.getElementById('previewContent');
+      const publishBtn = document.getElementById('publishBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const statusMessage = document.getElementById('statusMessage');
+
+      // Configure marked
+      marked.setOptions({
+        breaks: true,
+        gfm: true
+      });
+
+      // Init effects
+      Effects.initParticles();
+
+      // Header scroll
+      window.addEventListener('scroll', () => {
+        const header = document.getElementById('header');
+        if (window.scrollY > 50) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      });
+
+      // Footer typing
+      Effects.typeText(document.getElementById('footerText'), 'Ready to create new post', 40);
+
+      // Live preview
+      let previewTimeout;
+      contentInput.addEventListener('input', () => {
+        clearTimeout(previewTimeout);
+        previewTimeout = setTimeout(updatePreview, 300);
+      });
+
+      function updatePreview() {
+        const content = contentInput.value.trim();
+        if (!content) {
+          previewContent.innerHTML = '<p style="color: var(--text-dim);">Preview will appear here...</p>';
+          return;
+        }
+        previewContent.innerHTML = marked.parse(content);
+      }
+
+      // Publish handler
+      publishBtn.addEventListener('click', async () => {
+        const title = titleInput.value.trim();
+        const content = contentInput.value.trim();
+        const tags = tagsInput.value.trim();
+        const excerpt = excerptInput.value.trim();
+
+        if (!title) {
+          showStatus('Title is required', 'error');
+          titleInput.focus();
+          return;
+        }
+
+        if (!content) {
+          showStatus('Content is required', 'error');
+          contentInput.focus();
+          return;
+        }
+
+        publishBtn.disabled = true;
+        publishBtn.textContent = 'TRANSMITTING...';
+        showStatus('Encrypting and transmitting...', 'info');
+
+        try {
+          const post = await API.createPost({ title, content, tags, excerpt });
+          showStatus('Transmission successful!', 'success');
+          Effects.typeText(document.getElementById('footerText'), 'Post published successfully', 40);
+
+          setTimeout(() => {
+            window.location.href = `/post/${post.slug}`;
+          }, 1000);
+        } catch (err) {
+          showStatus(err.message || 'Transmission failed', 'error');
+          publishBtn.disabled = false;
+          publishBtn.textContent = 'PUBLISH';
+        }
+      });
+
+      // Cancel handler
+      cancelBtn.addEventListener('click', () => {
+        if (titleInput.value || contentInput.value) {
+          if (confirm('Discard changes?')) {
+            window.location.href = '/';
+          }
+        } else {
+          window.location.href = '/';
+        }
+      });
+
+      function showStatus(message, type) {
+        statusMessage.textContent = message;
+        statusMessage.className = 'editor-status ' + type;
+
+        if (type !== 'error') {
+          setTimeout(() => {
+            statusMessage.textContent = '';
+          }, 3000);
+        }
+      }
+
+      // Focus title on load
+      titleInput.focus();
+    })();
+  </script>
+
+  <style>
+    .editor-status {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      text-align: center;
+      margin-top: 1rem;
+      min-height: 1.5em;
+    }
+
+    .editor-status.info {
+      color: var(--neon-cyan);
+    }
+
+    .editor-status.success {
+      color: #22c55e;
+    }
+
+    .editor-status.error {
+      color: var(--neon-magenta);
+    }
+  </style>
+</body>
+</html>
