@@ -1,0 +1,12 @@
+{
+  "name": "ai-dev-company",
+  "version": "1.0.0",
+  "description": "AI 全自动开发工作流 - 虚拟软件公司",
+  "scripts": {
+    "start": "echo '使用 /autopilot 或 /skill autopilot 启动开发流程'",
+    "init": "mkdir -p .omc/state .omc/plans .omc/notepad"
+  },
+  "keywords": ["claude-code", "ai-dev", "autopilot", "multi-agent"],
+  "author": "AI Dev Company Team",
+  "license": "MIT"
+}
