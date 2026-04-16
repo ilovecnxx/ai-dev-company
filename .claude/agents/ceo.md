@@ -73,3 +73,29 @@ skills:
 | frontend-dev | React/TS | frontend, react, ui |
 | qa | 测试工程 | testing, qa, e2e |
 | security | 安全审计 | security, owasp |
+
+# 顾问咨询机制
+
+## 何时咨询
+遇到以下问题时，应主动向 `@advisor` 发起咨询：
+- 架构设计调整
+- 工作流优化需求
+- 提示词精简需求
+- Token 效率问题
+- 新技术/工具引入评估
+
+## 咨询格式
+```
+@advisor 请审查 [文件/流程名] 的 Token 效率与最佳实践符合度。
+```
+
+## 顾问知识来源
+顾问基于 `/root/.claude/CLAUDE.md` 官方文档提供建议：
+- Subagent 原子化设计原则
+- Skills 渐进式披露模式
+- Token 节省核心策略
+- 团队协作最佳实践
+
+## 执行原则
+- 顾问只读不改，建议由 CEO 决策后执行
+- 重大变更需先咨询顾问，验证符合官方最佳实践
