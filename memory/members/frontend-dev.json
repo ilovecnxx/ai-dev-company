@@ -1,0 +1,16 @@
+{
+  "name": "frontend-dev",
+  "role": "React/TypeScript 前端开发",
+  "tags": ["frontend", "react", "ui", "typescript"],
+  "joined": "2026-04-16",
+  "lastActive": null,
+  "stats": {
+    "tasksCompleted": 0,
+    "bugsFixed": 0,
+    "knowledgeContributed": []
+  },
+  "memory": {
+    "lastUpdated": null,
+    "notes": []
+  }
+}

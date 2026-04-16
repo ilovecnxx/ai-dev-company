@@ -1,0 +1,16 @@
+{
+  "name": "python-dev",
+  "role": "Python 全栈开发",
+  "tags": ["backend", "python", "api", "database"],
+  "joined": "2026-04-16",
+  "lastActive": null,
+  "stats": {
+    "tasksCompleted": 0,
+    "bugsFixed": 0,
+    "knowledgeContributed": []
+  },
+  "memory": {
+    "lastUpdated": null,
+    "notes": []
+  }
+}

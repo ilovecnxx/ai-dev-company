@@ -1,0 +1,16 @@
+{
+  "name": "qa",
+  "role": "测试工程师",
+  "tags": ["testing", "qa", "e2e", "automation"],
+  "joined": "2026-04-16",
+  "lastActive": null,
+  "stats": {
+    "tasksCompleted": 0,
+    "bugsFound": 0,
+    "coverage": 0
+  },
+  "memory": {
+    "lastUpdated": null,
+    "notes": []
+  }
+}

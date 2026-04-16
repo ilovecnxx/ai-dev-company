@@ -1,0 +1,16 @@
+{
+  "name": "security",
+  "role": "安全审计专家",
+  "tags": ["security", "owasp", "audit", "pentest"],
+  "joined": "2026-04-16",
+  "lastActive": null,
+  "stats": {
+    "auditsCompleted": 0,
+    "vulnerabilitiesFound": 0,
+    "criticalFixed": 0
+  },
+  "memory": {
+    "lastUpdated": null,
+    "notes": []
+  }
+}
